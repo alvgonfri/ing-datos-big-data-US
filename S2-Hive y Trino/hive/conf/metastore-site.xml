@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<configuration>
-    <property>
-        <name>metastore.thrift.uris</name>
-        <value>thrift://hive:9083</value>
-    </property>
-</configuration>
