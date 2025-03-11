@@ -2,7 +2,7 @@ services:
   # Nodo Maestro de HDFS
   namenode:
     image: apache/hadoop:3.4.1
-    container_name: namenode
+    container_name: namenodeS3
     hostname: namenode
     user: root
     environment:
@@ -15,7 +15,7 @@ services:
     ports:
       - "9870:9870"
       - "9000:9000"
-    command: ["/bin/bash", "/start-hdfs.sh"]
+    command: [ "/bin/bash", "/start-hdfs.sh" ]
     networks:
       hdfs_network:
         ipv4_address: 172.20.0.2
@@ -23,7 +23,7 @@ services:
   # Nodos de almacenamiento de HDFS
   datanode1:
     image: apache/hadoop:3.4.1
-    container_name: datanode1
+    container_name: datanode1S3
     hostname: datanode1
     user: root
     environment:
@@ -35,14 +35,14 @@ services:
       - ./scripts/init-datanode.sh:/init-datanode.sh
     depends_on:
       - namenode
-    command: ["/bin/bash", "/init-datanode.sh"]
+    command: [ "/bin/bash", "/init-datanode.sh" ]
     networks:
       hdfs_network:
         ipv4_address: 172.20.0.3
 
   datanode2:
     image: apache/hadoop:3.4.1
-    container_name: datanode2
+    container_name: datanode2S3
     hostname: datanode2
     user: root
     environment:
@@ -54,7 +54,7 @@ services:
       - ./scripts/init-datanode.sh:/init-datanode.sh
     depends_on:
       - namenode
-    command: ["/bin/bash", "/init-datanode.sh"]
+    command: [ "/bin/bash", "/init-datanode.sh" ]
     networks:
       hdfs_network:
         ipv4_address: 172.20.0.4
@@ -62,7 +62,7 @@ services:
   # YARN Resource Manager
   resourcemanager:
     build: .
-    container_name: resourcemanager
+    container_name: resourcemanagerS3
     hostname: resourcemanager
     user: root
     environment:
@@ -72,14 +72,14 @@ services:
       - ./hadoop_config:/opt/hadoop/etc/hadoop
       - ./scripts/start-yarn.sh:/start-yarn.sh
     ports:
-      - "8088:8088"   # Interfaz web de YARN
-      - "8030:8030"   # Comunicación con aplicaciones
+      - "8088:8088" # Interfaz web de YARN
+      - "8030:8030" # Comunicación con aplicaciones
       - "8031:8031"
       - "8032:8032"
       - "8033:8033"
     depends_on:
       - namenode
-    command: ["/bin/bash", "/start-yarn.sh"]
+    command: [ "/bin/bash", "/start-yarn.sh" ]
     networks:
       hdfs_network:
         ipv4_address: 172.20.0.5
@@ -87,7 +87,7 @@ services:
   # YARN Node Manager
   nodemanager:
     build: .
-    container_name: nodemanager
+    container_name: nodemanagerS3
     hostname: nodemanager
     user: root
     environment:
@@ -98,9 +98,9 @@ services:
       - ./scripts/start-nodemanager.sh:/start-nodemanager.sh
     depends_on:
       - resourcemanager
-    command: ["/bin/bash", "/start-nodemanager.sh"]
+    command: [ "/bin/bash", "/start-nodemanager.sh" ]
     ports:
-      - "8042:8042"   # Interfaz del NodeManager
+      - "8042:8042" # Interfaz del NodeManager
     networks:
       hdfs_network:
         ipv4_address: 172.20.0.6
@@ -148,25 +148,24 @@ services:
     depends_on:
       - kafka
     environment:
-    - CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR=1
-    - CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR=1
-    - CONNECT_STATUS_STORAGE_REPLICATION_FACTOR=1
-    - CONNECT_BOOTSTRAP_SERVERS=kafka:9092
-    - CONNECT_REST_PORT=8083
-    - CONNECT_GROUP_ID=connect-cluster
-    - CONNECT_CONFIG_STORAGE_TOPIC=connect-configs
-    - CONNECT_OFFSET_STORAGE_TOPIC=connect-offsets
-    - CONNECT_STATUS_STORAGE_TOPIC=connect-status
-    - CONNECT_KEY_CONVERTER=org.apache.kafka.connect.storage.StringConverter
-    - CONNECT_VALUE_CONVERTER=org.apache.kafka.connect.json.JsonConverter
-    - CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE=false
-    - CONNECT_REST_ADVERTISED_HOST_NAME=kafka-connect
+      - CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR=1
+      - CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR=1
+      - CONNECT_STATUS_STORAGE_REPLICATION_FACTOR=1
+      - CONNECT_BOOTSTRAP_SERVERS=kafka:9092
+      - CONNECT_REST_PORT=8083
+      - CONNECT_GROUP_ID=connect-cluster
+      - CONNECT_CONFIG_STORAGE_TOPIC=connect-configs
+      - CONNECT_OFFSET_STORAGE_TOPIC=connect-offsets
+      - CONNECT_STATUS_STORAGE_TOPIC=connect-status
+      - CONNECT_KEY_CONVERTER=org.apache.kafka.connect.storage.StringConverter
+      - CONNECT_VALUE_CONVERTER=org.apache.kafka.connect.json.JsonConverter
+      - CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE=false
+      - CONNECT_REST_ADVERTISED_HOST_NAME=kafka-connect
     ports:
       - "8083:8083"
     networks:
       hdfs_network:
         ipv4_address: 172.20.0.9
-
 
   # Interfaz web para administración de Kafka
   kafka-ui:
